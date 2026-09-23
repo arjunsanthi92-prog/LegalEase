@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>LegalEase AI</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef4ff, #ffffff);
+    color: #1f2937;
+}
+
+.container {
+    max-width: 900px;
+    margin: 50px auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    font-size: 50px;
+}
+
+h1 {
+    margin: 5px 0;
+    color: #123c88;
+    font-size: 42px;
+}
+
+.subtitle {
+    font-size: 18px;
+    color: #555;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    font-size: 17px;
+}
+
+textarea {
+    width: 100%;
+    min-height: 150px;
+    padding: 18px;
+    border: 2px solid #d5dce8;
+    border-radius: 12px;
+    font-size: 16px;
+    resize: vertical;
+    outline: none;
+}
+
+textarea:focus {
+    border-color: #1769e0;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+button {
+    border: none;
+    padding: 13px 25px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.get-btn {
+    background: #1769e0;
+    color: white;
+    flex: 1;
+}
+
+.get-btn:hover {
+    background: #0e4fae;
+}
+
+.clear-btn {
+    background: #e5e7eb;
+    color: #222;
+}
+
+.examples {
+    margin-top: 25px;
+}
+
+.examples p {
+    font-weight: bold;
+}
+
+.example-btn {
+    background: #eef4ff;
+    color: #174ea6;
+    margin: 5px;
+    padding: 9px 13px;
+    font-size: 14px;
+}
+
+.answer {
+    display: none;
+    margin-top: 25px;
+    padding: 25px;
+    background: #f5f9ff;
+    border-left: 5px solid #1769e0;
+    border-radius: 10px;
+}
+
+.answer h2 {
+    margin-top: 0;
+    color: #123c88;
+}
+
+.answer p {
+    line-height: 1.7;
+}
+
+.history {
+    margin-top: 25px;
+}
+
+.history-item {
+    background: #fafafa;
+    padding: 12px;
+    margin-top: 8px;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.disclaimer {
+    text-align: center;
+    margin-top: 25px;
+    color: #777;
+    font-size: 13px;
+}
+
+@media(max-width:600px) {
+    .container {
+        margin: 20px auto;
+    }
+
+    h1 {
+        font-size: 32px;
+    }
+
+    .buttons {
+        flex-direction: column;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="header">
+        <div class="logo">⚖️</div>
+        <h1>LegalEase AI</h1>
+        <div class="subtitle">
+            Your Simple Legal Information Assistant
+        </div>
+    </div>
+
+    <div class="card">
+
+        <label for="question">
+            Ask your legal question
+        </label>
+
+        <textarea
+            id="question"
+            placeholder="Example: What is a rental agreement?"
+        ></textarea>
+
+        <div class="buttons">
+            <button class="get-btn" onclick="getAnswer()">
+                Get Answer
+            </button>
+
+            <button class="clear-btn" onclick="clearQuestion()">
+                Clear
+            </button>
+        </div>
+
+        <div class="examples">
+
+            <p>Try an example:</p>
+
+            <button class="example-btn"
+                onclick="setQuestion('What is a rental agreement?')">
+                Rental Agreement
+            </button>
+
+            <button class="example-btn"
+                onclick="setQuestion('What is a contract?')">
+                Contract
+            </button>
+
+            <button class="example-btn"
+                onclick="setQuestion('What is a security deposit?')">
+                Security Deposit
+            </button>
+
+            <button class="example-btn"
+                onclick="setQuestion('What is a legal notice?')">
+                Legal Notice
+            </button>
+
+        </div>
+
+        <div id="answer" class="answer"></div>
+
+        <div id="history" class="history"></div>
+
+    </div>
+
+    <div class="disclaimer">
+        ⚠️ This tool provides general legal information only.
+        For actual legal advice, consult a qualified lawyer.
+    </div>
+
+</div>
+
+<script>
+
+function setQuestion(text) {
+    document.getElementById("question").value = text;
+}
+
+function getAnswer() {
+
+    const question =
+        document.getElementById("question").value.trim();
+
+    const answerBox =
+        document.getElementById("answer");
+
+    if (question === "") {
+        answerBox.innerHTML =
+            "<h2>Please enter a question</h2>" +
+            "<p>Type your legal question above and click Get Answer.</p>";
+
+        answerBox.style.display = "block";
+        return;
+    }
+
+    const q = question.toLowerCase();
+
+    let title = "LegalEase Response";
+    let answer = "";
+
+    if (q.includes("rental") || q.includes("rent")) {
+
+        title = "Rental Agreement";
+
+        answer = `
+        <p>
+        A rental agreement is a legal agreement between a landlord
+        and a tenant that sets out the terms for renting a property.
+        </p>
+
+        <p><strong>It commonly includes:</strong></p>
+
+        <ul>
+            <li>Monthly rent</li>
+            <li>Security deposit</li>
+            <li>Rental period</li>
+            <li>Responsibilities of landlord and tenant</li>
+            <li>Rules for ending the agreement</li>
+        </ul>
+
+        <p>
+        The exact rights and obligations depend on the applicable
+        law and the terms of the agreement.
+        </p>
+        `;
+
+    } else if (q.includes("contract")) {
+
+        title = "Contract";
+
+        answer = `
+        <p>
+        A contract is an agreement between two or more parties
+        that creates legally enforceable obligations.
+        </p>
+
+        <p><strong>A contract commonly contains:</strong></p>
+
+        <ul>
+            <li>Names of the parties</li>
+            <li>Rights and responsibilities</li>
+            <li>Payment or consideration</li>
+            <li>Duration of the agreement</li>
+            <li>Terms for ending the agreement</li>
+        </ul>
+        `;
+
+    } else if (
+        q.includes("security deposit") ||
+        q.includes("deposit")
+    ) {
+
+        title = "Security Deposit";
+
+        answer = `
+        <p>
+        A security deposit is money paid by a tenant to a landlord
+        as security for certain obligations under a rental agreement.
+        </p>
+
+        <p>
+        Depending on applicable law and the agreement, it may be
+        used for issues such as unpaid rent or certain property damage.
+        </p>
+
+        <p>
+        Deposit rules can vary by location, so the applicable local
+        law should be checked.
+        </p>
+        `;
+
+    } else if (
+        q.includes("legal notice") ||
+        q.includes("notice")
+    ) {
+
+        title = "Legal Notice";
+
+        answer = `
+        <p>
+        A legal notice is a formal written communication that
+        informs a person or organisation about a legal issue,
+        demand, or intended legal action.
+        </p>
+
+        <p>
+        The required format, contents, and procedure can depend
+        on the type of matter and applicable law.
+        </p>
+        `;
+
+    } else {
+
+        title = "General Legal Information";
+
+        answer = `
+        <p>
+        Your question has been received:
+        <strong>${escapeHTML(question)}</strong>
+        </p>
+
+        <p>
+        This demo currently contains information about rental
+        agreements, contracts, security deposits, and legal notices.
+        </p>
+
+        <p>
+        For a specific legal matter, the applicable law and facts
+        should be reviewed by a qualified legal professional.
+        </p>
+        `;
+    }
+
+    answerBox.innerHTML =
+        "<h2>" + title + "</h2>" +
+        answer;
+
+    answerBox.style.display = "block";
+
+    addHistory(question);
+}
+
+function clearQuestion() {
+
+    document.getElementById("question").value = "";
+
+    const answerBox =
+        document.getElementById("answer");
+
+    answerBox.innerHTML = "";
+    answerBox.style.display = "none";
+}
+
+function addHistory(question) {
+
+    const history =
+        document.getElementById("history");
+
+    const item =
+        document.createElement("div");
+
+    item.className = "history-item";
+
+    item.innerHTML =
+        "📝 " + escapeHTML(question);
+
+    history.prepend(item);
+}
+
+function escapeHTML(text) {
+
+    const div = document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+}
+
+</script>
+
+</body>
+</html>
