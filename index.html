@@ -250,7 +250,7 @@ function setQuestion(text) {
     document.getElementById("question").value = text;
 }
 
-function getAnswer() {
+async function getAnswer() {
 
     const question =
         document.getElementById("question").value.trim();
@@ -267,131 +267,46 @@ function getAnswer() {
         return;
     }
 
-    const q = question.toLowerCase();
-
-    let title = "LegalEase Response";
-    let answer = "";
-
-    if (q.includes("rental") || q.includes("rent")) {
-
-        title = "Rental Agreement";
-
-        answer = `
-        <p>
-        A rental agreement is a legal agreement between a landlord
-        and a tenant that sets out the terms for renting a property.
-        </p>
-
-        <p><strong>It commonly includes:</strong></p>
-
-        <ul>
-            <li>Monthly rent</li>
-            <li>Security deposit</li>
-            <li>Rental period</li>
-            <li>Responsibilities of landlord and tenant</li>
-            <li>Rules for ending the agreement</li>
-        </ul>
-
-        <p>
-        The exact rights and obligations depend on the applicable
-        law and the terms of the agreement.
-        </p>
-        `;
-
-    } else if (q.includes("contract")) {
-
-        title = "Contract";
-
-        answer = `
-        <p>
-        A contract is an agreement between two or more parties
-        that creates legally enforceable obligations.
-        </p>
-
-        <p><strong>A contract commonly contains:</strong></p>
-
-        <ul>
-            <li>Names of the parties</li>
-            <li>Rights and responsibilities</li>
-            <li>Payment or consideration</li>
-            <li>Duration of the agreement</li>
-            <li>Terms for ending the agreement</li>
-        </ul>
-        `;
-
-    } else if (
-        q.includes("security deposit") ||
-        q.includes("deposit")
-    ) {
-
-        title = "Security Deposit";
-
-        answer = `
-        <p>
-        A security deposit is money paid by a tenant to a landlord
-        as security for certain obligations under a rental agreement.
-        </p>
-
-        <p>
-        Depending on applicable law and the agreement, it may be
-        used for issues such as unpaid rent or certain property damage.
-        </p>
-
-        <p>
-        Deposit rules can vary by location, so the applicable local
-        law should be checked.
-        </p>
-        `;
-
-    } else if (
-        q.includes("legal notice") ||
-        q.includes("notice")
-    ) {
-
-        title = "Legal Notice";
-
-        answer = `
-        <p>
-        A legal notice is a formal written communication that
-        informs a person or organisation about a legal issue,
-        demand, or intended legal action.
-        </p>
-
-        <p>
-        The required format, contents, and procedure can depend
-        on the type of matter and applicable law.
-        </p>
-        `;
-
-    } else {
-
-        title = "General Legal Information";
-
-        answer = `
-        <p>
-        Your question has been received:
-        <strong>${escapeHTML(question)}</strong>
-        </p>
-
-        <p>
-        This demo currently contains information about rental
-        agreements, contracts, security deposits, and legal notices.
-        </p>
-
-        <p>
-        For a specific legal matter, the applicable law and facts
-        should be reviewed by a qualified legal professional.
-        </p>
-        `;
-    }
-
     answerBox.innerHTML =
-        "<h2>" + title + "</h2>" +
-        answer;
+        "<h2>Thinking...</h2>" +
+        "<p>Getting your legal information...</p>";
 
     answerBox.style.display = "block";
 
-    addHistory(question);
+    try {
+
+        const response = await fetch("/api/ask", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                question: question
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Something went wrong.");
+        }
+
+        answerBox.innerHTML =
+            "<h2>LegalEase AI Response</h2>" +
+            "<p>" +
+            escapeHTML(data.answer).replace(/\n/g, "<br>") +
+            "</p>";
+
+        addHistory(question);
+
+    } catch (error) {
+
+        console.error(error);
+
+        answerBox.innerHTML =
+            "<h2>Unable to get answer</h2>" +
+            "<p>Please make sure the server is running and try again.</p>";
+    }
 }
 
 function clearQuestion() {
